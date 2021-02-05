@@ -53,6 +53,16 @@ namespace ecommerce.Controllers
         {
             if (ModelState.IsValid)
             {
+                var pic = string.Empty;
+                var folder = "~/Content/Logos";
+
+                if (company.LogoFile != null)
+                {
+                    pic = FilesHelper.UploadPhoto(company.LogoFile, folder);
+                    pic = string.Format("{0}/{1}", folder, pic);
+                }
+
+                company.Logo = pic;
                 db.Companies.Add(company);
                 db.SaveChanges();
                 return RedirectToAction("Index");
