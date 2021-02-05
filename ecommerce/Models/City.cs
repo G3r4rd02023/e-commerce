@@ -14,6 +14,7 @@ namespace ecommerce.Models
         public string Name { get; set; }
 
         [Required(ErrorMessage = "El campo {0} es requerido")]
+        [Range(1,double.MaxValue,ErrorMessage ="You must select a {0}")]
         public int DepartmentId { get; set; }
 
         public virtual Department Department { get; set; }

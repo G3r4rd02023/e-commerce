@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using ecommerce.Helpers;
+using ecommerce.Models;
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using ecommerce.Models;
 
 namespace ecommerce.Controllers
 {
@@ -39,24 +37,42 @@ namespace ecommerce.Controllers
         // GET: Cities/Create
         public ActionResult Create()
         {
-            ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "Name");
+
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartments(), "DepartmentId", "Name");
             return View();
         }
 
         // POST: Cities/Create
-       
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CityId,Name,DepartmentId")] City city)
+        public ActionResult Create( City city)
         {
             if (ModelState.IsValid)
             {
                 db.Cities.Add(city);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null &&
+                        ex.InnerException.InnerException != null &&
+                        ex.InnerException.InnerException.Message.Contains("_Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "Ya existe un regsitro con ese Nombre!!");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
+                }
+                return View(city);
             }
 
-            ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "Name", city.DepartmentId);
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartments(), "DepartmentId", "Name");
             return View(city);
         }
 
@@ -72,23 +88,42 @@ namespace ecommerce.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "Name", city.DepartmentId);
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartments(), "DepartmentId", "Name");
             return View(city);
         }
 
         // POST: Cities/Edit/5
-       
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CityId,Name,DepartmentId")] City city)
+        public ActionResult Edit( City city)
         {
             if (ModelState.IsValid)
             {
                 db.Entry(city).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+
+                try
+                {
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null &&
+                        ex.InnerException.InnerException!= null &&
+                        ex.InnerException.InnerException.Message.Contains("_Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "Ya existe un regsitro con ese Nombre!!");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }                 
+                }
+                return View(city);    
+                
             }
-            ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "Name", city.DepartmentId);
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartments(), "DepartmentId", "Name");
             return View(city);
         }
 
@@ -114,8 +149,25 @@ namespace ecommerce.Controllers
         {
             City city = db.Cities.Find(id);
             db.Cities.Remove(city);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            try
+            {
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null &&
+                    ex.InnerException.InnerException != null &&
+                    ex.InnerException.InnerException.Message.Contains("REFERENCE"))
+                {
+                    ModelState.AddModelError(string.Empty, "Este registro no puede ser borrado, ya que tiene otros registros relacionados");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+            }
+            return View(city);
         }
 
         protected override void Dispose(bool disposing)
