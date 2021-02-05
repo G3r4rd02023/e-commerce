@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace ecommerce.Models
 {
@@ -18,6 +19,10 @@ namespace ecommerce.Models
         public int DepartmentId { get; set; }
 
         public virtual Department Department { get; set; }
+
+        public virtual ICollection<Company> Companies { get; set; }
+
+
 
     }
 }
