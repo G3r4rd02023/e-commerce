@@ -37,6 +37,19 @@ namespace ecommerce.Helpers
 
         }
 
+        public static List<Company> GetCompanies()
+        {
+            var companies = db.Companies.ToList();
+            companies.Add(new Company
+            {
+                CompanyId = 0,
+                Name = "[Select a company...]",
+            });
+
+            return companies.OrderBy(c => c.Name).ToList();
+
+        }
+
         public void Dispose()
         {
             db.Dispose();
