@@ -17,6 +17,7 @@ namespace ecommerce.Models
             "The field {0} can contain maximun {1} and minimum {2} characters",
             MinimumLength = 3)]
         [Index("Department_Name_Index",  IsUnique = true)]
+        [Display(Name = "Departamento")]
         public string Name { get; set; }
 
         public virtual ICollection<City> Cities  { get; set; }

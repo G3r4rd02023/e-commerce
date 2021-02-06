@@ -11,6 +11,7 @@ using ecommerce.Models;
 
 namespace ecommerce.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
         private EcommerceContext db = new EcommerceContext();
@@ -107,6 +108,13 @@ namespace ecommerce.Controllers
         {
             if (ModelState.IsValid)
             {
+                var db2 = new EcommerceContext();
+                var currentUser = db2.Users.Find(user.UserId);
+                if(currentUser.UserName != user.UserName)
+                {
+                    UserHelper.UpdateUserName(currentUser.UserName, user.UserName);
+                }
+                db2.Dispose();
                 db.Entry(user).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -140,6 +148,7 @@ namespace ecommerce.Controllers
             User user = db.Users.Find(id);
             db.Users.Remove(user);
             db.SaveChanges();
+            UserHelper.DeleteUser(user.UserName);
             return RedirectToAction("Index");
         }
 
