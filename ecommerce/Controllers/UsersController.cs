@@ -56,6 +56,8 @@ namespace ecommerce.Controllers
             {
                 db.Users.Add(user);
                 db.SaveChanges();
+                UserHelper.CreateUserASP(user.UserName, "User");
+
                 if (user.PhotoFile != null)
                 {
 

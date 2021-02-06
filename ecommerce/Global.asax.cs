@@ -1,3 +1,4 @@
+using ecommerce.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -16,11 +17,19 @@ namespace ecommerce
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<Models.EcommerceContext,
                 Migrations.Configuration>());
+            CheckRolesAndSuperUser();
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+        }
+
+        private void CheckRolesAndSuperUser()
+        {
+            UserHelper.CheckRole("Admin");
+            UserHelper.CheckRole("User");
+            UserHelper.CheckSuperUser();
         }
     }
 }
