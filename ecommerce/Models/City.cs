@@ -30,6 +30,6 @@ namespace ecommerce.Models
         public virtual ICollection<User> Users { get; set; }
 
 
-
+        public virtual ICollection<Warehouse> Warehouses { get; set; }
     }
 }
