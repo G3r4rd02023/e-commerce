@@ -25,6 +25,18 @@ namespace ecommerce.Helpers
 
         }
 
+        public static List<Product> GetProducts(int companyId)
+        {
+            var products = db.Products.Where(p => p.CompanyId == companyId).ToList();
+            products.Add(new Product
+            {
+                ProductID = 0,
+                Description = "[Select a product...]",
+            });
+
+            return products.OrderBy(p => p.Description).ToList();
+        }
+
         public static List<City> GetCities()
         {
             var cities = db.Cities.ToList();
@@ -61,6 +73,18 @@ namespace ecommerce.Helpers
             });
 
             return categories.OrderBy(c => c.Description).ToList();
+        }
+
+        public static IEnumerable GetCustomers(int companyId)
+        {
+            var customers = db.Customers.Where(c => c.CompanyId == companyId).ToList();
+            customers.Add(new Customer
+            {
+                CustomerId = 0,
+                FirstName = "[Select a customer...]",
+            });
+
+            return customers.OrderBy(c => c.FirstName).ThenBy(c=>c.LastName).ToList();
         }
 
         public static List<Tax> GetTaxes(int companyId)
