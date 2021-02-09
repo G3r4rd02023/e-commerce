@@ -63,9 +63,14 @@ namespace ecommerce.Controllers
             if (ModelState.IsValid)
             {
                 db.Customers.Add(customer);
-                db.SaveChanges();
-                UserHelper.CreateUserASP(customer.UserName, "Customer");
-                return RedirectToAction("Index");
+                var response = DBHelper.SaveChanges(db);
+                if(response.Succedeed)
+                {
+                    UserHelper.CreateUserASP(customer.UserName, "Customer");
+                    return RedirectToAction("Index");
+                }
+
+                ModelState.AddModelError(string.Empty, response.Message);
             }
 
             ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", customer.CityId);            
@@ -99,8 +104,12 @@ namespace ecommerce.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(customer).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                var response = DBHelper.SaveChanges(db);
+                if(response.Succedeed)
+                {
+                    return RedirectToAction("Index");
+                }
+                ModelState.AddModelError(string.Empty, response.Message);
             }
             ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", customer.CityId);
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDepartments(), "DepartmentId", "Name", customer.DepartmentId);
@@ -129,9 +138,14 @@ namespace ecommerce.Controllers
         {
             Customer customer = db.Customers.Find(id);
             db.Customers.Remove(customer);
-            db.SaveChanges();
-            UserHelper.DeleteUser(customer.UserName);
-            return RedirectToAction("Index");
+            var response = DBHelper.SaveChanges(db);
+            if (response.Succedeed)
+            {
+                UserHelper.DeleteUser(customer.UserName);
+                return RedirectToAction("Index");
+            }
+            ModelState.AddModelError(string.Empty, response.Message);
+            return View(customer);
         }
 
         protected override void Dispose(bool disposing)

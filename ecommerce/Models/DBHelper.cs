@@ -19,5 +19,37 @@ namespace ecommerce.Models
             }
             return state.StateId;
         }
+
+        public static Response SaveChanges(EcommerceContext db)
+        {
+            try
+            {
+                db.SaveChanges();
+                return new Response { Succedeed = true, };
+            }
+            catch (Exception ex)
+            {
+                var response = new Response { Succedeed = false, };
+                if (ex.InnerException != null &&
+                    ex.InnerException.InnerException != null &&
+                    ex.InnerException.InnerException.Message.Contains("_Index"))
+                {
+                    response.Message = "There is a record with the same value";
+                }
+                else if (ex.InnerException != null &&
+                    ex.InnerException.InnerException != null &&
+                    ex.InnerException.InnerException.Message.Contains("REFERENCE"))
+                {
+                    response.Message = "The record can't be delete because it has related records";
+                }
+                else
+                {
+                    response.Message = ex.Message;
+                }
+
+                return response;
+            }
+        }
+
     }
 }
