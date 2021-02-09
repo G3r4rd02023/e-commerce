@@ -148,7 +148,7 @@ namespace ecommerce.Controllers
             User user = db.Users.Find(id);
             db.Users.Remove(user);
             db.SaveChanges();
-            UserHelper.DeleteUser(user.UserName);
+            UserHelper.DeleteUser(user.UserName,"User");
             return RedirectToAction("Index");
         }
 

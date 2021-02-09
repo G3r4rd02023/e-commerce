@@ -25,6 +25,12 @@ namespace ecommerce.Helpers
 
         }
 
+        public static List<Product> GetProducts(int companyId, bool sw)
+        {
+            var products = db.Products.Where(p => p.CompanyId == companyId).ToList();
+            return products.OrderBy(p => p.Description).ToList();
+        }
+
         public static List<Product> GetProducts(int companyId)
         {
             var products = db.Products.Where(p => p.CompanyId == companyId).ToList();
@@ -75,9 +81,21 @@ namespace ecommerce.Helpers
             return categories.OrderBy(c => c.Description).ToList();
         }
 
-        public static IEnumerable GetCustomers(int companyId)
+        public static List<Customer> GetCustomers(int companyId)
         {
-            var customers = db.Customers.Where(c => c.CompanyId == companyId).ToList();
+            var qry = (from cu in db.Customers
+                       join cc in db.CompanyCustomers on cu.CustomerId equals cc.CustomerId
+                       join co in db.Companies on cc.CompanyId equals co.CompanyId
+                       where co.CompanyId == companyId
+                       select new { cu }).ToList();
+
+            var customers = new List<Customer>();
+
+            foreach(var item in qry )
+            {
+                customers.Add(item.cu);
+            }
+
             customers.Add(new Customer
             {
                 CustomerId = 0,
